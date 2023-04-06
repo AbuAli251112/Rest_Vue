@@ -14,5 +14,12 @@ module.exports = {
   rules: {
     "no-console": process.env.NODE_ENV === "production" ? "warn" : "off",
     "no-debugger": process.env.NODE_ENV === "production" ? "warn" : "off",
+    quotes: ["error", "double", "avoid-escape"],
+    "vue/no-deprecated-router-link-tag-prop": [
+      "error",
+      {
+        components: ["*"],
+      },
+    ],
   },
 };

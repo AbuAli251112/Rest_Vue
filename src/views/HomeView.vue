@@ -1,18 +1,51 @@
 <template>
-  <div class="home">
-    <img alt="Vue logo" src="../assets/logo.png" />
-    <HelloWorld msg="Welcome to Your Vue.js App" />
+  <div class="container">
+    <Navbar />
+    <p class="text-end">
+      Welcome {{ userName }}
+      <router-link :to="{ name: 'profile' }">
+        <button class="btn btn-info">Profile</button>
+      </router-link>
+    </p>
+    <router-link :to="{ name: 'AddNewLocation' }">
+      <button type="button" class="btn btn-primary">Add New Restaurant</button>
+    </router-link>
+    <UserLocations :allLocations="ListOfLocations" />
   </div>
 </template>
 
 <script>
-// @ is an alias to /src
-import HelloWorld from "@/components/HelloWorld.vue";
-
+import Navbar from "@/components/Header/Navbar.vue";
+import { mapActions } from "vuex";
+import axios from "axios";
+import UserLocations from "@/components/Locations/UserLocations.vue";
 export default {
   name: "HomeView",
-  components: {
-    HelloWorld,
+  data: () => {
+    return {
+      userName: "",
+      userId: "",
+      ListOfLocations: [],
+    };
   },
+  async mounted() {
+    let user = localStorage.getItem("user-info");
+    if (!user) {
+      this.redirectTo({ val: "signup" });
+    } else {
+      this.userName = JSON.parse(user).name;
+      this.userId = JSON.parse(user).id;
+    }
+    let result = await axios.get(
+      `http://localhost:3000/locations?userId=${this.userId}`
+    );
+    if (result.status === 200 && result.data.length > 0) {
+      this.ListOfLocations = result.data;
+    }
+  },
+  methods: {
+    ...mapActions(["redirectTo"]),
+  },
+  components: { Navbar, UserLocations },
 };
 </script>
